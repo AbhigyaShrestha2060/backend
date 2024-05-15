@@ -1,11 +1,10 @@
-const router = require('express').Router();
-const userController = require('../controllers/userController')
+const router = require("express").Router();
+const userController = require("../controllers/userControllers");
 
-//Creating user registration route
+// Creating user registration route
+router.post("/create", userController.createUser);
 
-router.post('/create',userController.createUser)
+// Creating user login route
+router.post("/login", userController.loginUser);
 
-// controller (Export) - Routes (Import) - user = (index.js)
-
-//Exporting
-module.exports = router
+module.exports = router;
