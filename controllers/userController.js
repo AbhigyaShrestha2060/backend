@@ -1,10 +1,12 @@
 const userModel = require("../models/userModel");
+const bcrypt = require("bcrypt");
+
 const createUser = async (req, res) => {
   console.log(req.body);
   // res.send("Create user API is Working")
   // LOGIC FOR REGISTERATION
   // 1. Check incomming data
-  // 2. Destructure th incomming data
+  // 2. Destructure the incomming data
 
   const { firstName, lastName, email, password } = req.body;
 
@@ -27,17 +29,22 @@ const createUser = async (req, res) => {
     if (existingUser) {
       // 5.1.1 Stop the process
       return res.json({
-        status: false,
+        success: false,
         message: "User already Exist",
       });
     }
+
+    //Hashing/Encryption of the password
+    const randomSalt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, randomSalt);
+
     // 5.2 If user is new:
     const newUser = new userModel({
       //Fields : Client's Value
       firstName: firstName,
       lastName: lastName,
       email: email,
-      password: password,
+      password: hashedPassword,
     });
     // SAVE TO THE DATABASE
     await newUser.save();
@@ -54,6 +61,7 @@ const createUser = async (req, res) => {
 
     // 5.2.3 Send successfull response
   } catch (error) {
+    console.log(error);
     res.json({
       success: false,
       message: "Internal Server Error",
@@ -61,7 +69,7 @@ const createUser = async (req, res) => {
   }
 };
 
-const loginUser = (req, res) => {
+const loginUser = async (req, res) => {
   // LOGIC FOR LOGIN
   // 1. Check incomming data
   // 2. Destructure th incomming data
@@ -75,6 +83,29 @@ const loginUser = (req, res) => {
   // 5.2.2 Check the pssword
   // 5.2.3 If password doesnt match: send response
   // 5.2.4 If password match: send sucessfull response
+  const { email, password } = req.body;
+
+  if (!email && !password) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Fill in all the required fields" });
+  }
+  try {
+    const userExists = await User.findOne({ email: email, password: password });
+    if (!userExists) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid email or password" });
+    } else {
+      return res
+        .status(200)
+        .json({ success: true, message: "Logged in successfull!" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Internal server error:${error} " });
+  }
 };
 
 //ecporting
