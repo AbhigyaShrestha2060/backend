@@ -1,9 +1,9 @@
 // Importing the packages (express)
-const express = require("express");
-const connectDatabase = require("./database/database");
-const dotenv = require("dotenv");
-const cors = require("cors");
-const acceptFormData = require("express-fileupload");
+const express = require('express');
+const connectDatabase = require('./database/database');
+const dotenv = require('dotenv');
+const cors = require('cors');
+const acceptFormData = require('express-fileupload');
 
 // Creating an express app
 const app = express();
@@ -26,7 +26,7 @@ dotenv.config();
 app.use(acceptFormData());
 
 // make a static public folder
-app.use(express.static("./public"));
+app.use(express.static('./public'));
 
 // Connecting to database
 connectDatabase();
@@ -36,13 +36,13 @@ const PORT = process.env.PORT;
 
 // Making a test endpoint
 // Endpoints : POST, GET, PUT , DELETE
-app.get("/test", (req, res) => {
-  res.send("Test API is Working!....");
+app.get('/test', (req, res) => {
+  res.send('Test API is Working!....');
 });
 
 // Configuring Routes of User
-app.use("/api/user", require("./routes/userRoutes"));
-app.use("/api/product", require("./routes/productRoutes"));
+app.use('/api/user', require('./routes/userRoutes'));
+app.use('/api/product', require('./routes/productRoutes'));
 
 // http://localhost:5000/api/user
 // http://localhost:5000/test
@@ -51,3 +51,6 @@ app.use("/api/product", require("./routes/productRoutes"));
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}....`);
 });
+
+//exporting the app
+module.exports = app;
